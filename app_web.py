@@ -3,13 +3,106 @@ import random
 import time
 
 # 1. Konfigurasi Halaman Web
-st.set_page_config(page_title="Game Perkalian Anak", page_icon="🎮", layout="centered")
+st.set_page_config(page_title="GAME PERKALIAN CYBER", page_icon="🎮", layout="centered")
 
-# 2. Judul Game
-st.title("🎉 GAME PERKALIAN SERU! 🎉")
-st.write("Halo! Mari belajar perkalian sambil bermain. Pilih jawaban yang benar ya! 😊")
+# 2. Gaya Desain Custom CSS (Retro Arcade / Neon Cyberpunk)
+st.markdown("""
+    <style>
+    /* Mengubah latar belakang seluruh aplikasi menjadi gelap gulita */
+    .stApp {
+        background-color: #0d0e15;
+        color: #00ff66;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    
+    /* Judul Utama Bergaya Neon */
+    .judul-neon {
+        text-align: center;
+        font-size: 2.8rem;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055, 0 0 30px #ff0055;
+        margin-bottom: 5px;
+    }
+    .sub-judul {
+        text-align: center;
+        color: #00ffff;
+        font-size: 1.1rem;
+        text-shadow: 0 0 5px #00ffff;
+        margin-bottom: 30px;
+    }
+    
+    /* Kotak Soal & Informasi */
+    .kotak-soal {
+        background-color: #1a1c28;
+        border: 3px solid #00ffff;
+        box-shadow: 0 0 15px #00ffff;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ffff00;
+        text-shadow: 0 0 5px #ffff00;
+        margin-bottom: 25px;
+    }
+    
+    /* Papan Skor */
+    .papan-skor {
+        background: linear-gradient(90deg, #ff0055, #00ffff);
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+    
+    /* Kustomisasi Tombol Streamlit agar Berwarna Warni */
+    div.stButton > button {
+        background-color: #1a1c28 !important;
+        color: #00ff66 !important;
+        border: 2px solid #00ff66 !important;
+        box-shadow: 0 0 8px #00ff66 !important;
+        font-size: 1.3rem !important;
+        font-weight: bold !important;
+        padding: 15px 0px !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease;
+    }
+    div.stButton > button:hover {
+        background-color: #00ff66 !important;
+        color: #000000 !important;
+        box-shadow: 0 0 20px #00ff66 !important;
+        transform: scale(1.03);
+    }
+    
+    /* Tombol Menu khusus */
+    .stButton button[key^="menu_"] {
+        border: 2px solid #ff0055 !important;
+        color: #ff0055 !important;
+        box-shadow: 0 0 8px #ff0055 !important;
+    }
+    .stButton button[key^="menu_"]:hover {
+        background-color: #ff0055 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 20px #ff0055 !important;
+    }
+    
+    /* Menyembunyikan elemen bawaan Streamlit yang mengganggu */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
 
-# 3. Inisialisasi State / Penyimpanan Data Game
+# 3. Judul Atas
+st.markdown('<div class="judul-neon">⚡ MULTIPLIER ARCADE ⚡</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-judul">> SYSTEM READY: PILIH JAWABAN YANG TEPAT!</div>', unsafe_allow_html=True)
+
+# 4. Inisialisasi State / Data Game
 if 'game_started' not in st.session_state:
     st.session_state.game_started = False
 if 'skor' not in st.session_state:
@@ -27,56 +120,53 @@ if 'feedback' not in st.session_state:
 if 'tipe_feedback' not in st.session_state:
     st.session_state.tipe_feedback = "info"
 
-# Fungsi untuk membuat pilihan ganda acak
 def buat_pilihan_ganda(kunci_jawaban):
     pilihan = {kunci_jawaban}
     while len(pilihan) < 4:
         salah = kunci_jawaban + random.randint(-5, 5)
         if salah > 0 and salah != kunci_jawaban:
             pilihan.add(salah)
-    
     list_pilihan = list(pilihan)
     random.shuffle(list_pilihan)
     return list_pilihan
 
-# --- TAMPILAN 1: MENU UTAMA (PILIH PERKALIAN 2-4) ---
+# --- TAMPILAN 1: MENU UTAMA ---
 if not st.session_state.game_started:
-    st.subheader("Pilih angka perkalian yang ingin kamu pelajari:")
+    st.markdown("<h3 style='text-align:center; color:#fff;'>[ PILIH MODE MISI PERKALIAN ]</h3>", unsafe_allow_html=True)
+    st.write("")
     
     col1, col2, col3 = st.columns(3)
-    
     with col1:
-        if st.button("🔢 Perkalian 2", use_container_width=True):
+        if st.button("🔴 PERKALIAN 2", use_container_width=True, key="menu_2"):
             st.session_state.angka_tetap = 2
-            st.session_state.pengali = random.randint(1, 10)  # Soal diacak pertama kali
+            st.session_state.pengali = random.randint(1, 10)
             st.session_state.pilihan_jawaban = buat_pilihan_ganda(2 * st.session_state.pengali)
             st.session_state.game_started = True
             st.rerun()
     with col2:
-        if st.button("🔢 Perkalian 3", use_container_width=True):
+        if st.button("🔵 PERKALIAN 3", use_container_width=True, key="menu_3"):
             st.session_state.angka_tetap = 3
-            st.session_state.pengali = random.randint(1, 10)  # Soal diacak pertama kali
+            st.session_state.pengali = random.randint(1, 10)
             st.session_state.pilihan_jawaban = buat_pilihan_ganda(3 * st.session_state.pengali)
             st.session_state.game_started = True
             st.rerun()
     with col3:
-        if st.button("🔢 Perkalian 4", use_container_width=True):
+        if st.button("🟢 PERKALIAN 4", use_container_width=True, key="menu_4"):
             st.session_state.angka_tetap = 4
-            st.session_state.pengali = random.randint(1, 10)  # Soal diacak pertama kali
+            st.session_state.pengali = random.randint(1, 10)
             st.session_state.pilihan_jawaban = buat_pilihan_ganda(4 * st.session_state.pengali)
             st.session_state.game_started = True
             st.rerun()
 
-# --- TAMPILAN 2: ARENA BERMAIN (PILIHAN GANDA) ---
+# --- TAMPILAN 2: ARENA BERMAIN ---
 else:
-    # Tampilkan Scoreboard
-    st.markdown(f"### ❤️ Nyawa: {'❤️ ' * st.session_state.nyawa} | ⭐ Skor: {st.session_state.skor}")
-    st.markdown("---")
+    # Status Bar Atas
+    st.markdown(f'<div class="papan-skor">❤️ NYAWA: {"❤️ " * st.session_state.nyawa} | ⭐ SKOR: {st.session_state.skor} PTS</div>', unsafe_allow_html=True)
     
-    # Cek status kalah
+    # Cek Game Over
     if st.session_state.nyawa <= 0:
-        st.error("🎮 GAME OVER! Jangan sedih ya, yuk coba lagi! 💪")
-        if st.button("Main Lagi 🔄", use_container_width=True):
+        st.error("🚨 GAME OVER! SISTEM CRASHED. Coba lagi, agen muda! 💪")
+        if st.button("KEMBALI KE MENU", use_container_width=True, key="btn_restart"):
             st.session_state.game_started = False
             st.session_state.nyawa = 3
             st.session_state.skor = 0
@@ -84,59 +174,52 @@ else:
             st.rerun()
             
     else:
-        # Ambil data soal saat ini
         A = st.session_state.angka_tetap
         B = st.session_state.pengali
         jawaban_benar = A * B
         
-        # Tampilkan Soal
-        st.info(f"### Berapa hasil dari:  **{A}  x  {B}**  ?", icon="🧮")
+        # Tampilkan Kotak Soal Futuristik
+        st.markdown(f'<div class="kotak-soal">BERAPA HASIL DARI:<br>{A} x {B} = ?</div>', unsafe_allow_html=True)
         
-        # Jika pilihan jawaban kosong, buat baru
         if not st.session_state.pilihan_jawaban:
             st.session_state.pilihan_jawaban = buat_pilihan_ganda(jawaban_benar)
 
-        # Tampilkan Teks Feedback dari Soal Sebelumnya (Jika ada)
+        # Tampilkan Teks Koreksi Jawaban Sebelumnya (jika ada)
         if st.session_state.feedback:
             if st.session_state.tipe_feedback == "success":
                 st.success(st.session_state.feedback)
             else:
                 st.error(st.session_state.feedback)
-            # Hapus feedback setelah ditampilkan agar tidak muncul terus di soal berikutnya
             st.session_state.feedback = ""
 
-        # Tampilkan 4 Tombol Pilihan Ganda
-        st.write("Pilih salah satu jawaban di bawah ini:")
+        # Tombol Pilihan Ganda bergaya Arcade Neon
         col_a, col_b = st.columns(2)
-        
         jawaban_dipilih = None
         
         with col_a:
-            if st.button(f"🅰️  {st.session_state.pilihan_jawaban[0]}", use_container_width=True, key="btn_0"):
+            if st.button(f"🤖 [ {st.session_state.pilihan_jawaban[0]} ]", use_container_width=True, key="btn_0"):
                 jawaban_dipilih = st.session_state.pilihan_jawaban[0]
-            if st.button(f"🅱️  {st.session_state.pilihan_jawaban[1]}", use_container_width=True, key="btn_1"):
+            if st.button(f"⚡ [ {st.session_state.pilihan_jawaban[1]} ]", use_container_width=True, key="btn_1"):
                 jawaban_dipilih = st.session_state.pilihan_jawaban[1]
                 
         with col_b:
-            if st.button(f"🅲  {st.session_state.pilihan_jawaban[2]}", use_container_width=True, key="btn_2"):
+            if st.button(f"🚀 [ {st.session_state.pilihan_jawaban[2]} ]", use_container_width=True, key="btn_2"):
                 jawaban_dipilih = st.session_state.pilihan_jawaban[2]
-            if st.button(f"🅳  {st.session_state.pilihan_jawaban[3]}", use_container_width=True, key="btn_3"):
+            if st.button(f"🔮 [ {st.session_state.pilihan_jawaban[3]} ]", use_container_width=True, key="btn_3"):
                 jawaban_dipilih = st.session_state.pilihan_jawaban[3]
 
-        # Proses jawaban otomatis saat tombol diklik
+        # Logika Pengecekan & Pengacakan Otomatis
         if jawaban_dipilih is not None:
             if jawaban_dipilih == jawaban_benar:
                 st.session_state.skor += 10
-                pesan_hebat = ["Keren banget! ✨", "Betul sekali! 🚀", "Kamu pintar! 🌟", "Luar biasa! 🔥"]
-                st.session_state.feedback = f"✅ {random.choice(pesan_hebat)} ({A} x {B} = {jawaban_benar})"
+                st.session_state.feedback = f"🎯 TARGET ACQUIRED! BENAR: {A} x {B} = {jawaban_benar}"
                 st.session_state.tipe_feedback = "success"
             else:
                 st.session_state.nyawa -= 1
-                st.session_state.feedback = f"❌ Yah, kurang tepat. {A} x {B} yang benar adalah {jawaban_benar}."
+                st.session_state.feedback = f"💥 SYSTEM DAMAGE! KOREKSI: {A} x {B} SEHARUSNYA {jawaban_benar}"
                 st.session_state.tipe_feedback = "error"
                 
-            # --- OTOMATIS ACAK SOAL BARU ---
-            # Cari angka pengali baru (1-10) secara acak yang berbeda dari soal barusan
+            # Otomatis acak soal baru langsung
             angka_baru = random.randint(1, 10)
             while angka_baru == B:
                 angka_baru = random.randint(1, 10)
@@ -144,13 +227,12 @@ else:
             st.session_state.pengali = angka_baru
             st.session_state.pilihan_jawaban = buat_pilihan_ganda(A * st.session_state.pengali)
             
-            # Beri jeda 1.5 detik agar anak bisa melihat jawaban mereka benar/salah, lalu refresh halaman otomatis
-            time.sleep(1.5)
+            time.sleep(1.2)
             st.rerun()
                 
-        # Tombol kembali ke menu utama
+        # Tombol Keluar / Kembali
         st.write("")
-        if st.button("⬅️ Kembali ke Menu Utama", key="btn_kembali"):
+        if st.button("⬅️ TERMINATE MISSION (KELUAR)", key="menu_keluar", use_container_width=True):
             st.session_state.game_started = False
             st.session_state.nyawa = 3
             st.session_state.skor = 0
