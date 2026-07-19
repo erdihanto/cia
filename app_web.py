@@ -52,8 +52,8 @@ def main():
             daftar_pengali.append(pengali) # Kembalikan soal jika salah input format
             continue
 
-        # Cek jawaban
-        if jawaban_anak == jawaban_correct := jawaban_benar:
+        # Cek jawaban (Sudah diperbaiki)
+        if jawaban_anak == jawaban_benar:
             skor += 10
             pesan_hebat = ["Keren banget! ✨", "Betul sekali! 🚀", "Kamu pintar! 🌟", "Luar biasa! 🔥"]
             print(f"✅ {random.choice(pesan_hebat)}")
