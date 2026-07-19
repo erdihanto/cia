@@ -1,128 +1,79 @@
-import streamlit as st
 import random
+import time
 
-# Konfigurasi Halaman Browser
-st.set_page_config(page_title="KB-TK Kristen Dian Wacana", page_icon="🏫", layout="wide")
-
-# Gaya Tampilan Visual Ceria (CSS Custom)
-st.markdown("""
-    <style>
-    .main { background-color: #E0F2FE; }
-    h1 { color: #FF9F1C; font-family: 'Segoe UI', sans-serif; }
-    .stButton>button { width: 100%; border-radius: 20px; font-weight: bold; }
-    </style>
-""", unsafe_allow_html=True)
-
-# --- DATABASE SISWA ---
-if 'database_siswa' not in st.session_state:
-    st.session_state.database_siswa = {
-        "KB": {"Adit": 0, "Amari": 0, "Levin": 0, "Sienny": 0, "Jesselyn": 0, "Kenzou": 0, "Ralf": 0},
-        "TK A": {
-            "Kenzie": 0, "Brigitta": 0, "Essy": 0, "Felicia": 0, "Geva": 0, 
-            "Greesa": 0, "Laras": 0, "Liam": 0, "Lova": 0, "Nawasena": 0, 
-            "Mashal": 0, "Senja": 0, "Viola": 0, "Zio": 0
-        },
-        "TK B": {
-            "Aileen": 0, "Agatha": 0, "Daniel": 0, "Sean": 0, "Elvano": 0, 
-            "Betha": 0, "Hiro": 0, "Karen": 0, "Reiga": 0, "Danis": 0, "Yura": 0
-        }
-    }
-
-if 'status_hadir' not in st.session_state:
-    st.session_state.status_hadir = {kelas: {nama: False for nama in siswa} for kelas, siswa in st.session_state.database_siswa.items()}
-
-if 'game_aktif' not in st.session_state:
-    st.session_state.game_aktif = None
-
-# --- HEADER APLIKASI ---
-st.title("🏫 E-Learning & Absensi: KB-TK Kristen DIAN WACANA")
-st.subheader("🌈 Pintar • Berbakti • Ceria")
-st.write("---")
-
-# --- LAYOUT DUA KOLOM ---
-kolom_kiri, kolom_kanan = st.columns([1, 1.2])
-
-# ==================== PANEL KIRI: ABSENSI ====================
-with kolom_kiri:
-    st.markdown("### ✨ 1. Pilih Kelas & Nama ✨")
+def main():
+    print("=======================================")
+    print("🎉 SELAMAT DATANG DI GAME PERKALIAN! 🎉")
+    print("=======================================")
+    print("Halo! Mari belajar perkalian sambil bermain. 😊")
     
-    # Pilih Kelas
-    kelas = st.selectbox("Pilih Kelasmu:", ["KB", "TK A", "TK B"])
-    info_usia = {"KB": "Usia 3-4 Tahun", "TK A": "Usia 4-5 Tahun", "TK B": "Usia 5-6 Tahun"}
-    st.info(f"👶 {info_usia[kelas]}")
-    
-    # Urutkan nama siswa
-    daftar_nama = sorted(list(st.session_state.database_siswa[kelas].keys()))
-    
-    # Pilih Nama
-    nama_terpilih = st.selectbox("Siapa Namamu?", ["-- Pilih Nama --"] + daftar_nama)
-    
-    if nama_terpilih != "-- Pilih Nama --":
-        hadir = st.session_state.status_hadir[kelas][nama_terpilih]
-        bintang = st.session_state.database_siswa[kelas][nama_terpilih]
+    # Pilih mode perkalian
+    while True:
+        print("\nPilih angka perkalian yang ingin kamu pelajari:")
+        print("1. Perkalian 1")
+        print("2. Perkalian 2")
+        print("3. Perkalian 3")
+        print("4. Perkalian 4")
         
-        if hadir:
-            st.success(f"🥰 Halo {nama_terpilih}! Kamu sudah hadir hari ini. Bintangmu: {bintang} ⭐")
+        pilihan = input("Masukkan pilihanmu (1-4): ")
+        if pilihan in ['1', '2', '3', '4']:
+            angka_tetap = int(pilihan)
+            break
         else:
-            st.warning(f"🙂 Ayo absen dulu, {nama_terpilih}!")
-            if st.button("✋ SAYA HADIR! 🎈", type="primary"):
-                st.session_state.status_hadir[kelas][nama_terpilih] = True
-                st.rerun()
+            print("❌ Pilihan tidak valid, yuk pilih angka 1 sampai 4!")
 
-# ==================== PANEL KANAN: GAME ZONA BERMAIN ====================
-with kolom_kanan:
-    st.markdown(f"### 🎮 ZONA BERMAIN KELAS {kelas}")
+    print(f"\n👍 Hebat! Kamu memilih Perkalian {angka_tetap}.")
+    print("Kamu punya 3 ❤️ (nyawa). Jawab yang teliti ya!")
+    print("Game dimulai dalam 3 detik...")
+    time.sleep(3)
     
-    if nama_terpilih == "-- Pilih Nama --" or not st.session_state.status_hadir[kelas][nama_terpilih]:
-        st.info("Silakan pilih namamu dan klik tombol **SAYA HADIR!** di sebelah kiri terlebih dahulu untuk bermain! 😊")
+    # Inisialisasi Game
+    skor = 0
+    nyawa = 3
+    # Membuat daftar angka 1-10 untuk dikalikan secara acak
+    daftar_pengali = list(range(1, 11))
+    random.shuffle(daftar_pengali)
+
+    # Loop Game
+    while nyawa > 0 and len(daftar_pengali) > 0:
+        # Ambil satu angka pengali dari daftar
+        pengali = daftar_pengali.pop()
+        jawaban_benar = angka_tetap * pengali
+        
+        print("\n---------------------------------------")
+        print(f"❤️ Nyawa: {nyawa} | ⭐ Skor: {skor}")
+        print(f"Berapa hasil dari: {angka_tetap} x {pengali} ?")
+        
+        # Validasi input agar game tidak error jika anak salah ketik huruf
+        try:
+            jawaban_anak = int(input("Jawab: "))
+        except ValueError:
+            print("⚠️ Oops! Masukkan angka saja ya.")
+            daftar_pengali.append(pengali) # Kembalikan soal jika salah input format
+            continue
+
+        # Cek jawaban
+        if jawaban_anak == jawaban_correct := jawaban_benar:
+            skor += 10
+            pesan_hebat = ["Keren banget! ✨", "Betul sekali! 🚀", "Kamu pintar! 🌟", "Luar biasa! 🔥"]
+            print(f"✅ {random.choice(pesan_hebat)}")
+        else:
+            nyawa -= 1
+            print(f"❌ Yah, kurang tepat. Yang benar adalah {jawaban_benar}.")
+            if nyawa > 0:
+                print("Ayo coba lagi di soal berikutnya! 💪")
+
+    # Game Over / Selesai
+    print("\n=======================================")
+    if nyawa == 0:
+        print("GAME OVER 🎮")
+        print("Jangan sedih, kamu bisa coba lagi nanti!")
     else:
-        # Pilihan game berdasarkan kategori
-        def get_game(kategori):
-            if kategori == "KB":
-                return random.choice([
-                    ("🍎 🍎", "Ada berapa jumlah buah apel merah di atas?", ["1", "2", "3"], "2"),
-                    ("🐶", "Suara hewan apakah di atas?", ["Guk-Guk 🐕", "Meong 🐈", "Kwek-Kwek 🦆"], "Guk-Guk 🐕"),
-                    ("❤️", "Warna apakah balon hati ini?", ["Merah ❤️", "Biru 💙", "Kuning 💛"], "Merah ❤️")
-                ])
-            elif kategori == "TK A":
-                return random.choice([
-                    ("🐘 ... 🐁", "Siapa yang badannya LEBIH BESAR?", ["Gajah 🐘", "Tikus 🐁", "Semut 🐜"], "Gajah 🐘"),
-                    ("A, B, _, D", "Huruf apa yang kosong di atas?", ["C", "M", "Q"], "C"),
-                    ("🚗 🚗 🚕 🚗", "Mobil ke berapa yang warnanya BERBEDA?", ["Ke-1", "Ke-2", "Ke-3"], "Ke-3")
-                ])
-            else: # TK B
-                return random.choice([
-                    ("3 + 2 = ?", "Berapakah hasil penjumlahan di atas?", ["4", "5", "6"], "5"),
-                    ("B _ N D E R A", "Lengkapi huruf vokal yang hilang!", ["A", "E", "O"], "E"),
-                    ("✈️", "Kendaraan di atas berjalan di mana?", ["Darat 🛣️", "Laut 🌊", "Udara ☁️"], "Udara ☁️")
-                ])
+        print("🎉 SELAMAT! KAMU BERHASIL MENYELESAIKAN SEMUA SOAL! 🎉")
+        
+    print(f"Skor Akhir Kamu: {skor} ⭐")
+    print("Terima kasih sudah bermain! Sampai jumpa lagi. 👋")
+    print("=======================================")
 
-        if st.button("🎲 MAIN / ACAK GAME BARU", type="secondary"):
-            st.session_state.game_aktif = get_game(kelas)
-            if 'jawaban_terjawab' in st.session_state:
-                del st.session_state.jawaban_terjawab
-
-        # Menampilkan Game jika sudah di-klik
-        if st.session_state.game_aktif:
-            visual, pertanyaan, opsi, jawaban_benar = st.session_state.game_aktif
-            
-            # Box Visual Game besar
-            st.markdown(f"<h1 style='text-align: center; font-size: 80px; background-color: #FFF9C4; border-radius: 15px; padding: 20px;'>{visual}</h1>", unsafe_allow_html=True)
-            st.markdown(f"#### {pertanyaan}")
-            
-            # Tombol Pilihan Jawaban
-            kol_opsi = st.columns(len(opsi))
-            for i, alternatif in enumerate(opsi):
-                with kol_opsi[i]:
-                    if st.button(alternatif, key=f"btn_{alternatif}"):
-                        st.session_state.jawaban_terjawab = alternatif
-
-            # Cek Jawaban
-            if 'jawaban_terjawab' in st.session_state:
-                if st.session_state.jawaban_terjawab == jawaban_benar:
-                    st.balloons()
-                    st.success(f"🏆 HEBAT! BENAR! Skor Bintang {nama_terpilih} bertambah! 🎉")
-                    st.session_state.database_siswa[kelas][nama_terpilih] += 1
-                    st.session_state.game_aktif = None # Reset game setelah benar
-                else:
-                    st.error("💪 Coba lagi ya! Kamu pasti bisa!")
+if __name__ == "__main__":
+    main()
