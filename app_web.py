@@ -1,11 +1,10 @@
 import random
-import time
 import streamlit as st
 
 # Konfigurasi Tampilan Halaman
-st.set_page_config(page_title="Kuis Penjumlahan Satuan", page_icon="🔢")
+st.set_page_config(page_title="Kuis Penjumlahan Satuan (4-9)", page_icon="🔢")
 
-st.title("🔢 Kuis Penjumlahan Satuan")
+st.title("🔢 Kuis Penjumlahan (Angka 4 - 9)")
 st.caption("Pilih jawaban yang benar. Soal akan otomatis berganti setelah dijawab!")
 
 # Inisialisasi State Skor dan Feedback
@@ -14,15 +13,16 @@ if "score" not in st.session_state:
 if "total" not in st.session_state:
     st.session_state.total = 0
 if "num1" not in st.session_state:
-    st.session_state.num1 = random.randint(0, 9)
-    st.session_state.num2 = random.randint(0, 9)
+    # Menggunakan rentang angka 4 sampai 9
+    st.session_state.num1 = random.randint(4, 9)
+    st.session_state.num2 = random.randint(4, 9)
 if "last_feedback" not in st.session_state:
     st.session_state.last_feedback = None
 
-# Fungsi untuk Menyiapkan Soal Baru
+# Fungsi untuk Menyiapkan Soal Baru (Angka 4-9)
 def generate_next_question():
-    st.session_state.num1 = random.randint(0, 9)
-    st.session_state.num2 = random.randint(0, 9)
+    st.session_state.num1 = random.randint(4, 9)
+    st.session_state.num2 = random.randint(4, 9)
 
 # Tampilkan Skor Saat Ini
 st.metric(label="Skor Kamu", value=f"{st.session_state.score} / {st.session_state.total}")
@@ -44,11 +44,12 @@ correct_answer = num1 + num2
 
 st.header(f"{num1} + {num2} = ?")
 
-# Generate Opsi Jawaban
+# Generate Opsi Jawaban Sesuai Rentang Hasil (8-18)
 random.seed(num1 * 10 + num2)
 wrong_answers = set()
 while len(wrong_answers) < 3:
-    fake = random.randint(0, 18)
+    # Rentang hasil minimum 4+4=8, maksimum 9+9=18
+    fake = random.randint(8, 18)
     if fake != correct_answer:
         wrong_answers.add(fake)
 
