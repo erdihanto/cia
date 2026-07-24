@@ -1,104 +1,72 @@
-from flask import Flask, render_template_string, request, session, redirect, url_for
 import random
+import streamlit as st
 
-app = Flask(__name__)
-app.secret_key = "kunci_rahasia_kuis"
+# Konfigurasi Tampilan Halaman
+st.set_page_config(page_title="Kuis Penjumlahan Satuan", page_icon="🔢")
 
-# Tampilan HTML & CSS dalam satu file
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Penjumlahan Satuan</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-        h1 { color: #333; font-size: 24px; margin-bottom: 10px; }
-        .score { font-size: 14px; color: #666; margin-bottom: 20px; }
-        .question { font-size: 36px; font-weight: bold; color: #2c3e50; margin: 20px 0; }
-        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .btn-option { padding: 15px; font-size: 20px; border: 2px solid #e0e0e0; background: #fff; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .btn-option:hover { background: #eef2ff; border-color: #4f46e5; color: #4f46e5; }
-        .feedback { font-size: 16px; font-weight: bold; margin-bottom: 15px; min-height: 24px; }
-        .correct { color: #16a34a; }
-        .wrong { color: #dc2626; }
-        .btn-next { width: 100%; padding: 12px; font-size: 16px; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; }
-        .btn-next:hover { background: #4338ca; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1>Kuis Penjumlahan Satuan</h1>
-        <div class="score">Skor: <strong>{{ session.get('score', 0) }}</strong> / {{ session.get('total', 0) }}</div>
+st.title("🔢 Kuis Penjumlahan Satuan")
+st.write("Jawab soal penjumlahan berikut. Soal tidak terbatas dan acak!")
 
-        {% if feedback %}
-            <div class="feedback {{ 'correct' if is_correct else 'wrong' }}">
-                {{ feedback }}
-            </div>
-            <a href="{{ url_for('index') }}"><button class="btn-next">Soal Berikutnya ➔</button></a>
-        {% else %}
-            <div class="question">{{ num1 }} + {{ num2 }} = ?</div>
-            <form method="POST" action="/check">
-                <div class="options">
-                    {% for opt in options %}
-                        <button type="submit" name="answer" value="{{ opt }}" class="btn-option">{{ opt }}</button>
-                    {% endfor %}
-                </div>
-            </form>
-        {% endif %}
-    </div>
-</body>
-</html>
-"""
+# Inisialisasi state untuk menyimpan skor & status
+if "score" not in st.session_state:
+    st.session_state.score = 0
+if "total" not in st.session_state:
+    st.session_state.total = 0
+if "num1" not in st.session_state:
+    st.session_state.num1 = random.randint(0, 9)
+    st.session_state.num2 = random.randint(0, 9)
+    st.session_state.answered = False
+    st.session_state.feedback = ""
 
-def generate_question():
-    a = random.randint(0, 9)
-    b = random.randint(0, 9)
-    correct = a + b
-    
-    # Buat 3 opsi jawaban salah yang unik dan masuk akal
-    wrong_options = set()
-    while len(wrong_options) < 3:
-        fake = random.randint(0, 18)
-        if fake != correct:
-            wrong_options.add(fake)
-            
-    options = list(wrong_options) + [correct]
-    random.shuffle(options)
-    
-    return a, b, correct, options
+# Fungsi untuk membuat soal baru
+def generate_new_question():
+    st.session_state.num1 = random.randint(0, 9)
+    st.session_state.num2 = random.randint(0, 9)
+    st.session_state.answered = False
+    st.session_state.feedback = ""
 
-@app.route("/")
-def index():
-    a, b, correct, options = generate_question()
-    session['num1'] = a
-    session['num2'] = b
-    session['correct'] = correct
-    
-    return render_template_string(HTML_TEMPLATE, num1=a, num2=b, options=options)
+correct_answer = st.session_state.num1 + st.session_state.num2
 
-@app.route("/check", methods=["POST"])
-def check():
-    user_ans = int(request.form.get("answer"))
-    correct_ans = session.get('correct')
-    
-    session['total'] = session.get('total', 0) + 1
-    
-    if user_ans == correct_ans:
-        session['score'] = session.get('score', 0) + 1
-        feedback = "Benar! Bagus sekali 🎉"
-        is_correct = True
+# Tampilkan Skor
+st.metric(label="Skor Kamu", value=f"{st.session_state.score} / {st.session_state.total}")
+st.divider()
+
+# Tampilkan Soal
+st.header(f"{st.session_state.num1} + {st.session_state.num2} = ?")
+
+# Buat Opsi Pilihan Ganda (1 jawaban benar, 3 salah)
+# Gunakan seed berdasarkan angka agar pilihan tidak teracak ulang setiap klik
+random.seed(st.session_state.num1 * 10 + st.session_state.num2)
+wrong_answers = set()
+while len(wrong_answers) < 3:
+    fake = random.randint(0, 18)
+    if fake != correct_answer:
+        wrong_answers.add(fake)
+
+options = list(wrong_answers) + [correct_answer]
+random.shuffle(options)
+random.seed() # Reset seed
+
+# Tampilkan Tombol Pilihan Jawaban (2x2 grid)
+col1, col2 = st.columns(2)
+for idx, opt in enumerate(options):
+    col = col1 if idx % 2 == 0 else col2
+    if col.button(f"{opt}", key=f"opt_{opt}", use_container_width=True, disabled=st.session_state.answered):
+        st.session_state.answered = True
+        st.session_state.total += 1
+        if opt == correct_answer:
+            st.session_state.score += 1
+            st.session_state.feedback = ("success", "🎉 Benar! Bagus sekali!")
+        else:
+            st.session_state.feedback = ("error", f"❌ Salah! Jawaban yang benar adalah {correct_answer}.")
+        st.rerun()
+
+# Tampilkan Feedback Hasil
+if st.session_state.feedback:
+    status_type, msg = st.session_state.feedback
+    if status_type == "success":
+        st.success(msg)
     else:
-        feedback = f"Salah! Jawaban yang benar adalah {correct_ans} ❌"
-        is_correct = False
-        
-    return render_template_string(
-        HTML_TEMPLATE, 
-        feedback=feedback, 
-        is_correct=is_correct
-    )
-
-if __name__ == "__main__":
-    app.run(debug=True)
+        st.error(msg)
+    
+    st.button("Soal Berikutnya ➔", on_click=generate_new_question, type="primary")
