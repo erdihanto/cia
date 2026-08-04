@@ -78,13 +78,12 @@ def play_natural_voice(text):
     <script>
     function speakText() {{
         if ('speechSynthesis' in window) {{
-            window.speechSynthesis.cancel(); // Hentikan suara sebelumnya jika ada
+            window.speechSynthesis.cancel();
             let utterance = new SpeechSynthesisUtterance("{text}");
-            utterance.lang = 'id-ID'; // Mengatur bahasa Indonesia yang natural
-            utterance.rate = 0.95;   // Kecepatan normal manusia (tidak terlalu cepat)
-            utterance.pitch = 1.0;   // Nada suara normal
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.95;
+            utterance.pitch = 1.0;
             
-            // Mencari suara berbahasa Indonesia bawaan sistem yang paling natural
             let voices = window.speechSynthesis.getVoices();
             let indonesianVoice = voices.find(voice => voice.lang === 'id-ID' || voice.lang === 'id_ID');
             if (indonesianVoice) {{
@@ -100,7 +99,7 @@ def play_natural_voice(text):
   st.components.v1.html(js_code, height=0)
 
 
-# Inisialisasi Session State
+# Inisialisasi Session State (Lengkap dengan teks_suara agar aman)
 if "score" not in st.session_state:
   st.session_state.score = 0
 if "total" not in st.session_state:
@@ -111,6 +110,8 @@ if "digit" not in st.session_state:
   st.session_state.digit = "1 Digit"
 if "feedback" not in st.session_state:
   st.session_state.feedback = None
+if "teks_suara" not in st.session_state:
+  st.session_state.teks_suara = "Berapakah soal matematika Anda?"
 
 
 # Fungsi Generator Soal
@@ -247,13 +248,13 @@ soal_html = (
 )
 st.markdown(soal_html, unsafe_allow_html=True)
 
-# Tombol untuk memutar ulang suara soal kapan saja
+# Tombol untuk memutar ulang suara soal
 col_suara1, col_suara2, col_suara3 = st.columns([1, 2, 1])
 with col_suara2:
   if st.button("🔊 Putar Ulang Suara Soal", use_container_width=True):
     play_natural_voice(st.session_state.teks_suara)
 
-# Panggil suara otomatis saat soal baru dimunculkan
+# Panggil suara otomatis
 play_natural_voice(st.session_state.teks_suara)
 
 st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
@@ -277,7 +278,7 @@ def jawab(pilihan):
   generate_question(st.session_state.mode, st.session_state.digit)
 
 
-# Tata Letak Tombol Pilihan Ganda (Lebar dan ukuran sama rata)
+# Tata Letak Tombol Pilihan Ganda
 col1, col2 = st.columns(2)
 
 with col1:
