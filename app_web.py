@@ -57,8 +57,8 @@ st.markdown(
     f" {st.session_state.n2} ?"
 )
 
-# Form Input Jawaban
-with st.form(key="form_jawaban", clear_submit=True):
+# Form Input Jawaban (Diperbaiki menggunakan clear_on_submit)
+with st.form(key="form_jawaban", clear_on_submit=True):
   jawaban_user = st.number_input(
       "Masukkan Jawaban Anda", step=1, format="%d", value=0
   )
