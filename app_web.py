@@ -1,4 +1,6 @@
+import io
 import random
+from gtts import gTTS
 import streamlit as st
 
 # Konfigurasi Halaman & Tema Modern
@@ -6,17 +8,14 @@ st.set_page_config(
     page_title="MathMaster Pro", page_icon="✨", layout="centered"
 )
 
-# Custom CSS dengan skema warna yang lebih menarik, elegan, dan profesional
+# Custom CSS untuk tampilan modern, estetik, dan profesional
 st.markdown(
     """
     <style>
-    /* Background utama putih bersih dengan font Inter */
     .main {
         background-color: #faf5ff;
         font-family: 'Inter', sans-serif;
     }
-    
-    /* Judul Utama */
     .app-title {
         font-size: 2.2rem;
         font-weight: 800;
@@ -30,8 +29,6 @@ st.markdown(
         text-align: center;
         margin-bottom: 2rem;
     }
-
-    /* Kotak Kartu Soal dengan Gradasi Ungu-Indigo yang Elegan */
     .question-card {
         background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
         padding: 2.5rem;
@@ -41,11 +38,9 @@ st.markdown(
         font-size: 3rem;
         font-weight: 800;
         box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.5);
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         letter-spacing: 2px;
     }
-
-    /* Tombol Pilihan Ganda: Bersih, elegan, dengan efek hover lembut */
     div.stButton > button {
         width: 100% !important;
         background-color: #ffffff;
@@ -66,14 +61,11 @@ st.markdown(
         transform: translateY(-2px);
         box-shadow: 0 8px 20px -4px rgba(139, 92, 246, 0.25);
     }
-    
-    /* Sidebar dengan gaya minimalis */
     [data-testid="stSidebar"] {
         background-color: #ffffff;
         border-right: 1px solid #f3f4f6;
         padding: 1.5rem 1rem;
     }
-
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     </style>
@@ -94,7 +86,7 @@ if "feedback" not in st.session_state:
   st.session_state.feedback = None
 
 
-# Fungsi Generator Soal
+# Fungsi Generator Soal & Suara Audio
 def generate_question(mode, digit_str):
   if digit_str == "1 Digit":
     min_val, max_val = 1, 9
@@ -118,15 +110,18 @@ def generate_question(mode, digit_str):
 
   if mode == "Pertambahan":
     correct = n1 + n2
-    symbol = "+"
+    symbol_text = " ditambah "
+    symbol_display = "+"
   elif mode == "Pengurangan":
     if n1 < n2:
       n1, n2 = n2, n1
     correct = n1 - n2
-    symbol = "-"
+    symbol_text = " dikurangi "
+    symbol_display = "-"
   elif mode == "Perkalian":
     correct = n1 * n2
-    symbol = "×"
+    symbol_text = " dikali "
+    symbol_display = "×"
 
   options = [correct]
   while len(options) < 4:
@@ -139,9 +134,19 @@ def generate_question(mode, digit_str):
 
   st.session_state.n1 = n1
   st.session_state.n2 = n2
-  st.session_state.symbol = symbol
+  st.session_state.symbol = symbol_display
   st.session_state.correct = correct
   st.session_state.options = options
+
+  # Buat teks untuk dibacakan suara audio
+  teks_soal = f"Berapakah {n1} {symbol_text} {n2}?"
+
+  # Generate suara menggunakan gTTS (Bahasa Indonesia)
+  tts = gTTS(text=teks_soal, lang="id", slow=False)
+  fp = io.BytesIO()
+  tts.write_to_fp(fp)
+  fp.seek(0)
+  st.session_state.audio_bytes = fp.read()
 
 
 if "options" not in st.session_state:
@@ -150,8 +155,8 @@ if "options" not in st.session_state:
 # Header Aplikasi
 st.markdown('<p class="app-title">✨ MathMaster Pro ✨</p>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="app-subtitle">Asah kemampuan berhitung cepatmu dengan'
-    " gaya</p>",
+    '<p class="app-subtitle">Latihan soal matematika dengan teks dan audio'
+    " suara</p>",
     unsafe_allow_html=True,
 )
 
@@ -224,6 +229,9 @@ soal_html = (
 )
 st.markdown(soal_html, unsafe_allow_html=True)
 
+# Pemutar Audio Suara Soal (Otomatis / Bisa Diputar Ulang)
+st.audio(st.session_state.audio_bytes, format="audio/mp3", autoplay=True)
+
 
 # Fungsi Logika Jawaban
 def jawab(pilihan):
@@ -243,7 +251,7 @@ def jawab(pilihan):
   generate_question(st.session_state.mode, st.session_state.digit)
 
 
-# Tata Letak Tombol Pilihan Ganda
+# Tata Letak Tombol Pilihan Ganda (Lebar dan ukuran sama rata)
 col1, col2 = st.columns(2)
 
 with col1:
