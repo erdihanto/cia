@@ -1,6 +1,4 @@
-import io
 import random
-from gtts import gTTS
 import streamlit as st
 
 # Konfigurasi Halaman & Tema Modern
@@ -8,7 +6,7 @@ st.set_page_config(
     page_title="MathMaster Pro", page_icon="✨", layout="centered"
 )
 
-# Custom CSS untuk tampilan modern, estetik, dan profesional
+# Custom CSS & Integrasi Web Speech API (Suara Manusia Asli)
 st.markdown(
     """
     <style>
@@ -38,7 +36,7 @@ st.markdown(
         font-size: 3rem;
         font-weight: 800;
         box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.5);
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         letter-spacing: 2px;
     }
     div.stButton > button {
@@ -73,6 +71,35 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+# Fungsi untuk memanggil suara manusia via JavaScript Browser (Web Speech API)
+def play_natural_voice(text):
+  js_code = f"""
+    <script>
+    function speakText() {{
+        if ('speechSynthesis' in window) {{
+            window.speechSynthesis.cancel(); // Hentikan suara sebelumnya jika ada
+            let utterance = new SpeechSynthesisUtterance("{text}");
+            utterance.lang = 'id-ID'; // Mengatur bahasa Indonesia yang natural
+            utterance.rate = 0.95;   // Kecepatan normal manusia (tidak terlalu cepat)
+            utterance.pitch = 1.0;   // Nada suara normal
+            
+            // Mencari suara berbahasa Indonesia bawaan sistem yang paling natural
+            let voices = window.speechSynthesis.getVoices();
+            let indonesianVoice = voices.find(voice => voice.lang === 'id-ID' || voice.lang === 'id_ID');
+            if (indonesianVoice) {{
+                utterance.voice = indonesianVoice;
+            }}
+            
+            window.speechSynthesis.speak(utterance);
+        }}
+    }}
+    speakText();
+    </script>
+    """
+  st.components.v1.html(js_code, height=0)
+
+
 # Inisialisasi Session State
 if "score" not in st.session_state:
   st.session_state.score = 0
@@ -86,7 +113,7 @@ if "feedback" not in st.session_state:
   st.session_state.feedback = None
 
 
-# Fungsi Generator Soal & Suara Audio
+# Fungsi Generator Soal
 def generate_question(mode, digit_str):
   if digit_str == "1 Digit":
     min_val, max_val = 1, 9
@@ -137,16 +164,7 @@ def generate_question(mode, digit_str):
   st.session_state.symbol = symbol_display
   st.session_state.correct = correct
   st.session_state.options = options
-
-  # Buat teks untuk dibacakan suara audio
-  teks_soal = f"Berapakah {n1} {symbol_text} {n2}?"
-
-  # Generate suara menggunakan gTTS (Bahasa Indonesia)
-  tts = gTTS(text=teks_soal, lang="id", slow=False)
-  fp = io.BytesIO()
-  tts.write_to_fp(fp)
-  fp.seek(0)
-  st.session_state.audio_bytes = fp.read()
+  st.session_state.teks_suara = f"Berapakah {n1} {symbol_text} {n2}?"
 
 
 if "options" not in st.session_state:
@@ -155,8 +173,8 @@ if "options" not in st.session_state:
 # Header Aplikasi
 st.markdown('<p class="app-title">✨ MathMaster Pro ✨</p>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="app-subtitle">Latihan soal matematika dengan teks dan audio'
-    " suara</p>",
+    '<p class="app-subtitle">Latihan matematika interaktif dengan suara'
+    " manusia asli</p>",
     unsafe_allow_html=True,
 )
 
@@ -229,8 +247,16 @@ soal_html = (
 )
 st.markdown(soal_html, unsafe_allow_html=True)
 
-# Pemutar Audio Suara Soal (Otomatis / Bisa Diputar Ulang)
-st.audio(st.session_state.audio_bytes, format="audio/mp3", autoplay=True)
+# Tombol untuk memutar ulang suara soal kapan saja
+col_suara1, col_suara2, col_suara3 = st.columns([1, 2, 1])
+with col_suara2:
+  if st.button("🔊 Putar Ulang Suara Soal", use_container_width=True):
+    play_natural_voice(st.session_state.teks_suara)
+
+# Panggil suara otomatis saat soal baru dimunculkan
+play_natural_voice(st.session_state.teks_suara)
+
+st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
 
 
 # Fungsi Logika Jawaban
