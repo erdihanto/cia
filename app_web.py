@@ -1,82 +1,82 @@
 import random
 import streamlit as st
 
-# Konfigurasi Tampilan Halaman
-st.set_page_config(page_title="Kuis Penjumlahan Satuan (4-9)", page_icon="🔢")
+# Judul Aplikasi
+st.title("Latihan Soal Matematika Tanpa Batas")
 
-st.title("🔢 Kuis Penjumlahan (Angka 4 - 9)")
-st.caption("Pilih jawaban yang benar. Soal akan otomatis berganti setelah dijawab!")
-
-# Inisialisasi State Skor dan Feedback
+# Inisialisasi session state untuk skor dan soal
 if "score" not in st.session_state:
-    st.session_state.score = 0
+  st.session_state.score = 0
 if "total" not in st.session_state:
-    st.session_state.total = 0
-if "num1" not in st.session_state:
-    # Menggunakan rentang angka 4 sampai 9
-    st.session_state.num1 = random.randint(4, 9)
-    st.session_state.num2 = random.randint(4, 9)
-if "last_feedback" not in st.session_state:
-    st.session_state.last_feedback = None
+  st.session_state.total = 0
+if "mode" not in st.session_state:
+  st.session_state.mode = "Pertambahan"
 
-# Fungsi untuk Menyiapkan Soal Baru (Angka 4-9)
-def generate_next_question():
-    st.session_state.num1 = random.randint(4, 9)
-    st.session_state.num2 = random.randint(4, 9)
 
-# Tampilkan Skor Saat Ini
-st.metric(label="Skor Kamu", value=f"{st.session_state.score} / {st.session_state.total}")
+# Fungsi membuat soal baru
+def generate_question(mode):
+  if mode == "Pertambahan":
+    n1, n2 = random.randint(1, 50), random.randint(1, 50)
+    st.session_state.correct = n1 + n2
+    st.session_state.symbol = "+"
+  elif mode == "Pengurangan":
+    n1, n2 = random.randint(1, 50), random.randint(1, 50)
+    if n1 < n2:
+      n1, n2 = n2, n1
+    st.session_state.correct = n1 - n2
+    st.session_state.symbol = "-"
+  elif mode == "Perkalian":
+    n1, n2 = random.randint(1, 12), random.randint(1, 12)
+    st.session_state.correct = n1 * n2
+    st.session_state.symbol = "×"
 
-# Tampilkan Notifikasi Hasil dari Soal Sebelumnya (jika ada)
-if st.session_state.last_feedback:
-    status_type, msg = st.session_state.last_feedback
-    if status_type == "success":
-        st.success(msg)
-    else:
-        st.error(msg)
+  st.session_state.n1 = n1
+  st.session_state.n2 = n2
 
-st.divider()
+
+# Jika soal belum ada, buat baru
+if "n1" not in st.session_state:
+  generate_question(st.session_state.mode)
+
+# Menu Pilihan Operasi (Radio Button)
+mode_baru = st.radio(
+    "Pilih Menu:", ["Pertambahan", "Pengurangan", "Perkalian"], horizontal=True
+)
+
+# Jika menu diubah, reset skor dan buat soal baru
+if mode_baru != st.session_state.mode:
+  st.session_state.mode = mode_baru
+  st.session_state.score = 0
+  st.session_state.total = 0
+  generate_question(mode_baru)
+  st.rerun()
 
 # Tampilkan Soal
-num1 = st.session_state.num1
-num2 = st.session_state.num2
-correct_answer = num1 + num2
+st.markdown(
+    f"### Berapakah: {st.session_state.n1} {st.session_state.symbol}"
+    f" {st.session_state.n2} ?"
+)
 
-st.header(f"{num1} + {num2} = ?")
+# Form Input Jawaban
+with st.form(key="form_jawaban", clear_submit=True):
+  jawaban_user = st.number_input(
+      "Masukkan Jawaban Anda", step=1, format="%d", value=0
+  )
+  submit = st.form_submit_button("Jawab")
 
-# Generate Opsi Jawaban Sesuai Rentang Hasil (8-18)
-random.seed(num1 * 10 + num2)
-wrong_answers = set()
-while len(wrong_answers) < 3:
-    # Rentang hasil minimum 4+4=8, maksimum 9+9=18
-    fake = random.randint(8, 18)
-    if fake != correct_answer:
-        wrong_answers.add(fake)
-
-options = list(wrong_answers) + [correct_answer]
-random.shuffle(options)
-random.seed()
-
-# Fungsi yang Dipanggil Saat Jawaban Diklik
-def check_answer(user_choice, correct):
+  if submit:
     st.session_state.total += 1
-    if user_choice == correct:
-        st.session_state.score += 1
-        st.session_state.last_feedback = ("success", f"🎉 Benar! ({num1} + {num2} = {correct})")
+    if jawaban_user == st.session_state.correct:
+      st.session_state.score += 1
+      st.success("Benar! 🎉")
     else:
-        st.session_state.last_feedback = ("error", f"❌ Salah! Jawaban ({num1} + {num2}) yang benar adalah {correct}.")
-    
-    # Langsung ganti ke soal berikutnya
-    generate_next_question()
+      st.error(
+          f"Salah! Jawaban yang benar adalah {st.session_state.correct}."
+      )
+    generate_question(st.session_state.mode)
+    st.rerun()
 
-# Tampilkan Tombol Pilihan Jawaban (2x2 grid)
-col1, col2 = st.columns(2)
-for idx, opt in enumerate(options):
-    col = col1 if idx % 2 == 0 else col2
-    col.button(
-        f"{opt}", 
-        key=f"opt_{opt}", 
-        use_container_width=True,
-        on_click=check_answer,
-        args=(opt, correct_answer)
-    )
+# Tampilkan Skor
+st.write(
+    f"**Skor:** {st.session_state.score} dari {st.session_state.total} soal"
+)
