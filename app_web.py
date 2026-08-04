@@ -3,67 +3,77 @@ import streamlit as st
 
 # Konfigurasi Halaman & Tema Modern
 st.set_page_config(
-    page_title="MathMaster Pro", page_icon="📐", layout="centered"
+    page_title="MathMaster Pro", page_icon="✨", layout="centered"
 )
 
-# Custom CSS untuk tampilan UI/UX yang bersih dan profesional
+# Custom CSS dengan skema warna yang lebih menarik, elegan, dan profesional
 st.markdown(
     """
     <style>
+    /* Background utama putih bersih dengan font Inter */
     .main {
-        background-color: #f8fafc;
+        background-color: #faf5ff;
         font-family: 'Inter', sans-serif;
     }
+    
+    /* Judul Utama */
     .app-title {
         font-size: 2.2rem;
         font-weight: 800;
-        color: #1e293b;
+        color: #4c1d95;
         text-align: center;
         margin-bottom: 0.2rem;
     }
     .app-subtitle {
         font-size: 1rem;
-        color: #64748b;
+        color: #6b7280;
         text-align: center;
         margin-bottom: 2rem;
     }
+
+    /* Kotak Kartu Soal dengan Gradasi Ungu-Indigo yang Elegan */
     .question-card {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
         padding: 2.5rem;
-        border-radius: 16px;
+        border-radius: 20px;
         color: white;
         text-align: center;
-        font-size: 2.8rem;
-        font-weight: bold;
-        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        font-size: 3rem;
+        font-weight: 800;
+        box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.5);
         margin-bottom: 2rem;
         letter-spacing: 2px;
     }
+
+    /* Tombol Pilihan Ganda: Bersih, elegan, dengan efek hover lembut */
     div.stButton > button {
         width: 100% !important;
         background-color: #ffffff;
-        color: #1e293b;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 0.85rem 1rem;
+        color: #374151;
+        border: 2px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 0.9rem 1rem;
         font-size: 1.25rem;
         font-weight: 600;
         transition: all 0.2s ease-in-out;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
         display: block;
     }
     div.stButton > button:hover {
-        background-color: #3b82f6;
-        color: #ffffff;
-        border-color: #3b82f6;
+        background-color: #f5f3ff;
+        color: #6d28d9;
+        border-color: #8b5cf6;
         transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 8px 20px -4px rgba(139, 92, 246, 0.25);
     }
+    
+    /* Sidebar dengan gaya minimalis */
     [data-testid="stSidebar"] {
         background-color: #ffffff;
-        border-right: 1px solid #e2e8f0;
+        border-right: 1px solid #f3f4f6;
         padding: 1.5rem 1rem;
     }
+
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     </style>
@@ -138,19 +148,18 @@ if "options" not in st.session_state:
   generate_question(st.session_state.mode, st.session_state.digit)
 
 # Header Aplikasi
-st.markdown('<p class="app-title">MathMaster Pro</p>', unsafe_allow_html=True)
+st.markdown('<p class="app-title">✨ MathMaster Pro ✨</p>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="app-subtitle">Asah kemampuan berhitung cepatmu tanpa'
-    " batas</p>",
+    '<p class="app-subtitle">Asah kemampuan berhitung cepatmu dengan'
+    " gaya</p>",
     unsafe_allow_html=True,
 )
 
-# Sidebar Menu Standar yang Bersih dan Terstruktur (Tanpa Membingungkan)
+# Sidebar Menu Pengaturan
 with st.sidebar:
   st.markdown("### ⚙️ Pengaturan Latihan")
   st.markdown("---")
 
-  # Menggunakan selectbox standar yang rapi dan terbiasa digunakan pengguna web
   digit_baru = st.selectbox(
       "Pilih Tingkat Kesulitan:",
       ["1 Digit", "2 Digit", "3 Digit", "4 Digit"],
@@ -185,7 +194,7 @@ if digit_baru != st.session_state.digit or mode_baru != st.session_state.mode:
   generate_question(mode_baru, digit_baru)
   st.rerun()
 
-# Dashboard Skor (Metrik Profesional)
+# Dashboard Skor
 col_m1, col_m2, col_m3 = st.columns(3)
 col_m1.metric(
     label="Skor Benar", value=st.session_state.score, delta="Poin Aktif"
@@ -208,7 +217,7 @@ if st.session_state.feedback:
   else:
     st.error(pesan)
 
-# Tampilan Kartu Soal Modern
+# Tampilan Kartu Soal
 soal_html = (
     f'<div class="question-card">{st.session_state.n1}'
     f" {st.session_state.symbol} {st.session_state.n2} = ?</div>"
@@ -234,7 +243,7 @@ def jawab(pilihan):
   generate_question(st.session_state.mode, st.session_state.digit)
 
 
-# Tata Letak Tombol Pilihan Ganda (Grid 2x2 dengan ukuran tombol sama rata)
+# Tata Letak Tombol Pilihan Ganda
 col1, col2 = st.columns(2)
 
 with col1:
