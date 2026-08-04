@@ -6,7 +6,7 @@ st.set_page_config(
     page_title="MathMaster Pro", page_icon="✨", layout="centered"
 )
 
-# Custom CSS & Integrasi Web Speech API (Suara Manusia Asli)
+# Custom CSS & Integrasi Web Speech API
 st.markdown(
     """
     <style>
@@ -72,7 +72,7 @@ st.markdown(
 )
 
 
-# Fungsi untuk memanggil suara manusia via JavaScript Browser (Web Speech API)
+# Fungsi untuk memutar suara manusia via JavaScript Browser
 def play_natural_voice(text):
   js_code = f"""
     <script>
@@ -99,7 +99,7 @@ def play_natural_voice(text):
   st.components.v1.html(js_code, height=0)
 
 
-# Inisialisasi Session State (Lengkap dengan teks_suara agar aman)
+# Inisialisasi Session State
 if "score" not in st.session_state:
   st.session_state.score = 0
 if "total" not in st.session_state:
@@ -174,8 +174,8 @@ if "options" not in st.session_state:
 # Header Aplikasi
 st.markdown('<p class="app-title">✨ MathMaster Pro ✨</p>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="app-subtitle">Latihan matematika interaktif dengan suara'
-    " manusia asli</p>",
+    '<p class="app-subtitle">Latihan matematika interaktif dengan opsi audio'
+    " suara</p>",
     unsafe_allow_html=True,
 )
 
@@ -199,6 +199,11 @@ with st.sidebar:
           st.session_state.mode
       ),
   )
+
+  st.markdown("---")
+  st.markdown("### 🔊 Pengaturan Suara")
+  # Pilihan Audio: Dengan Audio atau Tanpa Audio
+  gunakan_audio = st.toggle("Gunakan Audio Suara", value=True)
 
   st.markdown("---")
   if st.button("🔄 Reset Statistik", use_container_width=True):
@@ -248,14 +253,15 @@ soal_html = (
 )
 st.markdown(soal_html, unsafe_allow_html=True)
 
-# Tombol untuk memutar ulang suara soal
-col_suara1, col_suara2, col_suara3 = st.columns([1, 2, 1])
-with col_suara2:
-  if st.button("🔊 Putar Ulang Suara Soal", use_container_width=True):
-    play_natural_voice(st.session_state.teks_suara)
+# Tampilkan tombol putar ulang & jalankan suara otomatis HANYA JIKA opsi audio aktif
+if gunakan_audio:
+  col_suara1, col_suara2, col_suara3 = st.columns([1, 2, 1])
+  with col_suara2:
+    if st.button("🔊 Putar Ulang Suara Soal", use_container_width=True):
+      play_natural_voice(st.session_state.teks_suara)
 
-# Panggil suara otomatis
-play_natural_voice(st.session_state.teks_suara)
+  # Panggil suara otomatis saat soal baru
+  play_natural_voice(st.session_state.teks_suara)
 
 st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
 
