@@ -6,17 +6,14 @@ st.set_page_config(
     page_title="MathMaster Pro", page_icon="📐", layout="centered"
 )
 
-# Custom CSS untuk tampilan UI/UX yang sangat profesional & modern
+# Custom CSS untuk tampilan UI/UX yang bersih dan profesional
 st.markdown(
     """
     <style>
-    /* Mengubah background utama dan font */
     .main {
         background-color: #f8fafc;
         font-family: 'Inter', sans-serif;
     }
-    
-    /* Judul Utama */
     .app-title {
         font-size: 2.2rem;
         font-weight: 800;
@@ -30,8 +27,6 @@ st.markdown(
         text-align: center;
         margin-bottom: 2rem;
     }
-
-    /* Kotak Kartu Soal */
     .question-card {
         background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         padding: 2.5rem;
@@ -44,8 +39,6 @@ st.markdown(
         margin-bottom: 2rem;
         letter-spacing: 2px;
     }
-
-    /* Memaksa semua tombol pilihan ganda memiliki lebar 100% dan ukuran sama */
     div.stButton > button {
         width: 100% !important;
         background-color: #ffffff;
@@ -66,15 +59,11 @@ st.markdown(
         transform: translateY(-2px);
         box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
     }
-    
-    /* Desain Sidebar agar lebih bersih dan rapi */
     [data-testid="stSidebar"] {
         background-color: #ffffff;
         border-right: 1px solid #e2e8f0;
         padding: 1.5rem 1rem;
     }
-
-    /* Sembunyikan elemen bawaan Streamlit yang mengganggu estetika */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     </style>
@@ -156,46 +145,27 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Sidebar Menu Modern (Penyempurnaan Tampilan Menu)
+# Sidebar Menu Standar yang Bersih dan Terstruktur (Tanpa Membingungkan)
 with st.sidebar:
-  st.markdown("### 🎛️ Panel Kontrol")
-  st.markdown(
-      "<p style='font-size: 0.85rem; color: #64748b;'>Sesuaikan parameter"
-      " latihan Anda di bawah ini:</p>",
-      unsafe_allow_html=True,
-  )
-
+  st.markdown("### ⚙️ Pengaturan Latihan")
   st.markdown("---")
-  st.markdown(
-      "<p style='font-weight: 600; font-size: 0.9rem; color:"
-      " #334155;'>Tingkat Kesulitan (Digit)</p>",
-      unsafe_allow_html=True,
-  )
-  digit_baru = st.pills(
-      "Pilih Digit",
+
+  # Menggunakan selectbox standar yang rapi dan terbiasa digunakan pengguna web
+  digit_baru = st.selectbox(
+      "Pilih Tingkat Kesulitan:",
       ["1 Digit", "2 Digit", "3 Digit", "4 Digit"],
-      default=st.session_state.digit,
-      label_visibility="collapsed",
+      index=["1 Digit", "2 Digit", "3 Digit", "4 Digit"].index(
+          st.session_state.digit
+      ),
   )
 
-  st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
-  st.markdown(
-      "<p style='font-weight: 600; font-size: 0.9rem; color:"
-      " #334155;'>Operasi Hitung</p>",
-      unsafe_allow_html=True,
-  )
-  mode_baru = st.pills(
-      "Pilih Operasi",
+  mode_baru = st.selectbox(
+      "Pilih Operasi Hitung:",
       ["Pertambahan", "Pengurangan", "Perkalian"],
-      default=st.session_state.mode,
-      label_visibility="collapsed",
+      index=["Pertambahan", "Pengurangan", "Perkalian"].index(
+          st.session_state.mode
+      ),
   )
-
-  # Fallback jika pills kosong saat pertama dimuat
-  if not digit_baru:
-    digit_baru = st.session_state.digit
-  if not mode_baru:
-    mode_baru = st.session_state.mode
 
   st.markdown("---")
   if st.button("🔄 Reset Statistik", use_container_width=True):
