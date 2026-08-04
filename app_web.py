@@ -6,7 +6,7 @@ st.set_page_config(
     page_title="MathMaster Pro", page_icon="📐", layout="centered"
 )
 
-# Custom CSS untuk mempercantik tampilan (UI/UX Profesional)
+# Custom CSS untuk mempercantik tampilan & menyeragamkan ukuran tombol
 st.markdown(
     """
     <style>
@@ -45,20 +45,21 @@ st.markdown(
         letter-spacing: 2px;
     }
 
-    /* Styling tombol pilihan agar terlihat modern */
-    .stButton > button {
-        width: 100%;
+    /* Memaksa semua tombol pilihan ganda memiliki lebar 100% dan ukuran yang sama */
+    div.stButton > button {
+        width: 100% !important;
         background-color: #ffffff;
         color: #1e293b;
         border: 2px solid #e2e8f0;
         border-radius: 12px;
-        padding: 0.75rem 1rem;
+        padding: 0.85rem 1rem;
         font-size: 1.25rem;
         font-weight: 600;
         transition: all 0.2s ease-in-out;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        display: block;
     }
-    .stButton > button:hover {
+    div.stButton > button:hover {
         background-color: #3b82f6;
         color: #ffffff;
         border-color: #3b82f6;
@@ -226,21 +227,21 @@ def jawab(pilihan):
   generate_question(st.session_state.mode, st.session_state.digit)
 
 
-# Tata Letak Tombol Pilihan Ganda (Grid 2x2)
+# Tata Letak Tombol Pilihan Ganda (Grid 2x2 dengan ukuran tombol sama rata)
 col1, col2 = st.columns(2)
 
 with col1:
-  if st.button(str(st.session_state.options[0])):
+  if st.button(str(st.session_state.options[0]), use_container_width=True):
     jawab(st.session_state.options[0])
     st.rerun()
-  if st.button(str(st.session_state.options[1])):
+  if st.button(str(st.session_state.options[1]), use_container_width=True):
     jawab(st.session_state.options[1])
     st.rerun()
 
 with col2:
-  if st.button(str(st.session_state.options[2])):
+  if st.button(str(st.session_state.options[2]), use_container_width=True):
     jawab(st.session_state.options[2])
     st.rerun()
-  if st.button(str(st.session_state.options[3])):
+  if st.button(str(st.session_state.options[3]), use_container_width=True):
     jawab(st.session_state.options[3])
     st.rerun()
