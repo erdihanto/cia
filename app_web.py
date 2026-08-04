@@ -6,7 +6,7 @@ st.set_page_config(
     page_title="MathMaster Pro", page_icon="📐", layout="centered"
 )
 
-# Custom CSS untuk mempercantik tampilan & menyeragamkan ukuran tombol
+# Custom CSS untuk tampilan UI/UX yang sangat profesional & modern
 st.markdown(
     """
     <style>
@@ -45,7 +45,7 @@ st.markdown(
         letter-spacing: 2px;
     }
 
-    /* Memaksa semua tombol pilihan ganda memiliki lebar 100% dan ukuran yang sama */
+    /* Memaksa semua tombol pilihan ganda memiliki lebar 100% dan ukuran sama */
     div.stButton > button {
         width: 100% !important;
         background-color: #ffffff;
@@ -67,6 +67,13 @@ st.markdown(
         box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
     }
     
+    /* Desain Sidebar agar lebih bersih dan rapi */
+    [data-testid="stSidebar"] {
+        background-color: #ffffff;
+        border-right: 1px solid #e2e8f0;
+        padding: 1.5rem 1rem;
+    }
+
     /* Sembunyikan elemen bawaan Streamlit yang mengganggu estetika */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
@@ -149,16 +156,46 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Sidebar / Menu Pengaturan yang Rapi & Profesional
+# Sidebar Menu Modern (Penyempurnaan Tampilan Menu)
 with st.sidebar:
-  st.markdown("### ⚙️ Pengaturan Latihan")
-  digit_baru = st.selectbox(
-      "Tingkat Kesulitan (Digit):",
+  st.markdown("### 🎛️ Panel Kontrol")
+  st.markdown(
+      "<p style='font-size: 0.85rem; color: #64748b;'>Sesuaikan parameter"
+      " latihan Anda di bawah ini:</p>",
+      unsafe_allow_html=True,
+  )
+
+  st.markdown("---")
+  st.markdown(
+      "<p style='font-weight: 600; font-size: 0.9rem; color:"
+      " #334155;'>Tingkat Kesulitan (Digit)</p>",
+      unsafe_allow_html=True,
+  )
+  digit_baru = st.pills(
+      "Pilih Digit",
       ["1 Digit", "2 Digit", "3 Digit", "4 Digit"],
+      default=st.session_state.digit,
+      label_visibility="collapsed",
   )
-  mode_baru = st.radio(
-      "Pilih Operasi Hitung:", ["Pertambahan", "Pengurangan", "Perkalian"]
+
+  st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
+  st.markdown(
+      "<p style='font-weight: 600; font-size: 0.9rem; color:"
+      " #334155;'>Operasi Hitung</p>",
+      unsafe_allow_html=True,
   )
+  mode_baru = st.pills(
+      "Pilih Operasi",
+      ["Pertambahan", "Pengurangan", "Perkalian"],
+      default=st.session_state.mode,
+      label_visibility="collapsed",
+  )
+
+  # Fallback jika pills kosong saat pertama dimuat
+  if not digit_baru:
+    digit_baru = st.session_state.digit
+  if not mode_baru:
+    mode_baru = st.session_state.mode
 
   st.markdown("---")
   if st.button("🔄 Reset Statistik", use_container_width=True):
@@ -168,7 +205,7 @@ with st.sidebar:
     generate_question(mode_baru, digit_baru)
     st.rerun()
 
-# Cek perubahan konfigurasi
+# Cek perubahan konfigurasi menu
 if digit_baru != st.session_state.digit or mode_baru != st.session_state.mode:
   st.session_state.digit = digit_baru
   st.session_state.mode = mode_baru
