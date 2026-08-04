@@ -4,7 +4,7 @@ import streamlit as st
 # Judul Aplikasi
 st.title("Latihan Soal Matematika Tanpa Batas (Pilihan Ganda)")
 
-# Inisialisasi session state untuk skor dan soal
+# Inisialisasi session state secara lengkap di awal
 if "score" not in st.session_state:
   st.session_state.score = 0
 if "total" not in st.session_state:
@@ -33,7 +33,6 @@ def generate_question(mode):
   # Buat 3 pilihan salah yang mirip/acak
   options = [correct]
   while len(options) < 4:
-    # Buat angka pengecoh di sekitar jawaban benar
     offset = random.randint(-10, 10)
     wrong = correct + offset
     if wrong != correct and wrong not in options and wrong >= 0:
@@ -49,8 +48,8 @@ def generate_question(mode):
   st.session_state.options = options
 
 
-# Jika soal belum ada, buat baru
-if "n1" not in st.session_state:
+# Pastikan soal dan pilihan digenerate jika belum ada di session state
+if "options" not in st.session_state:
   generate_question(st.session_state.mode)
 
 # Menu Pilihan Operasi (Radio Button)
