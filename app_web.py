@@ -2,7 +2,7 @@ import random
 import streamlit as st
 
 # Judul Aplikasi
-st.title("Latihan Soal Matematika Tanpa Batas")
+st.title("Latihan Soal Matematika Tanpa Batas (Pilihan Ganda)")
 
 # Inisialisasi session state untuk skor dan soal
 if "score" not in st.session_state:
@@ -13,25 +13,40 @@ if "mode" not in st.session_state:
   st.session_state.mode = "Pertambahan"
 
 
-# Fungsi membuat soal baru
+# Fungsi membuat soal baru dan pilihan ganda
 def generate_question(mode):
   if mode == "Pertambahan":
     n1, n2 = random.randint(1, 50), random.randint(1, 50)
-    st.session_state.correct = n1 + n2
-    st.session_state.symbol = "+"
+    correct = n1 + n2
+    symbol = "+"
   elif mode == "Pengurangan":
     n1, n2 = random.randint(1, 50), random.randint(1, 50)
     if n1 < n2:
       n1, n2 = n2, n1
-    st.session_state.correct = n1 - n2
-    st.session_state.symbol = "-"
+    correct = n1 - n2
+    symbol = "-"
   elif mode == "Perkalian":
     n1, n2 = random.randint(1, 12), random.randint(1, 12)
-    st.session_state.correct = n1 * n2
-    st.session_state.symbol = "×"
+    correct = n1 * n2
+    symbol = "×"
+
+  # Buat 3 pilihan salah yang mirip/acak
+  options = [correct]
+  while len(options) < 4:
+    # Buat angka pengecoh di sekitar jawaban benar
+    offset = random.randint(-10, 10)
+    wrong = correct + offset
+    if wrong != correct and wrong not in options and wrong >= 0:
+      options.append(wrong)
+
+  # Acak posisi pilihan jawaban
+  random.shuffle(options)
 
   st.session_state.n1 = n1
   st.session_state.n2 = n2
+  st.session_state.symbol = symbol
+  st.session_state.correct = correct
+  st.session_state.options = options
 
 
 # Jika soal belum ada, buat baru
@@ -57,24 +72,30 @@ st.markdown(
     f" {st.session_state.n2} ?"
 )
 
-# Form Input Jawaban (Diperbaiki menggunakan clear_on_submit)
-with st.form(key="form_jawaban", clear_on_submit=True):
-  jawaban_user = st.number_input(
-      "Masukkan Jawaban Anda", step=1, format="%d", value=0
+# Form Pilihan Ganda
+with st.form(key="form_pilihan_ganda"):
+  # Tampilkan pilihan jawaban dalam bentuk Radio Button
+  jawaban_user = st.radio(
+      "Pilih jawaban Anda:", st.session_state.options, index=None
   )
   submit = st.form_submit_button("Jawab")
 
   if submit:
-    st.session_state.total += 1
-    if jawaban_user == st.session_state.correct:
-      st.session_state.score += 1
-      st.success("Benar! 🎉")
+    if jawaban_user is None:
+      st.warning("Silakan pilih salah satu jawaban terlebih dahulu!")
     else:
-      st.error(
-          f"Salah! Jawaban yang benar adalah {st.session_state.correct}."
-      )
-    generate_question(st.session_state.mode)
-    st.rerun()
+      st.session_state.total += 1
+      if jawaban_user == st.session_state.correct:
+        st.session_state.score += 1
+        st.success("Benar! 🎉")
+      else:
+        st.error(
+            f"Salah! Jawaban yang benar adalah {st.session_state.correct}."
+        )
+
+      # Buat soal baru setelah menjawab
+      generate_question(st.session_state.mode)
+      st.rerun()
 
 # Tampilkan Skor
 st.write(
