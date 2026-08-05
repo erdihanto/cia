@@ -74,7 +74,7 @@ st.markdown(
 
 # Fungsi untuk memutar suara manusia via JavaScript Browser
 def play_natural_voice(text):
-  js_code = f"""
+    js_code = f"""
     <script>
     function speakText() {{
         if ('speechSynthesis' in window) {{
@@ -96,132 +96,132 @@ def play_natural_voice(text):
     speakText();
     </script>
     """
-  st.components.v1.html(js_code, height=0)
+    st.components.v1.html(js_code, height=0)
 
 
 # Inisialisasi Session State
 if "score" not in st.session_state:
-  st.session_state.score = 0
+    st.session_state.score = 0
 if "total" not in st.session_state:
-  st.session_state.total = 0
+    st.session_state.total = 0
 if "mode" not in st.session_state:
-  st.session_state.mode = "Pertambahan"
+    st.session_state.mode = "Pertambahan"
 if "digit" not in st.session_state:
-  st.session_state.digit = "1 Digit"
+    st.session_state.digit = "1 Digit"
 if "feedback" not in st.session_state:
-  st.session_state.feedback = None
+    st.session_state.feedback = None
 if "teks_suara" not in st.session_state:
-  st.session_state.teks_suara = "Berapakah soal matematika Anda?"
+    st.session_state.teks_suara = "Berapakah soal matematika Anda?"
 
 
 # Fungsi Generator Soal
 def generate_question(mode, digit_str):
-  if digit_str == "1 Digit":
-    min_val, max_val = 1, 9
-  elif digit_str == "2 Digit":
-    min_val, max_val = 10, 99
-  elif digit_str == "3 Digit":
-    min_val, max_val = 100, 999
-  elif digit_str == "4 Digit":
-    min_val, max_val = 1000, 9999
-  else:
-    min_val, max_val = 1, 9
+    if digit_str == "1 Digit":
+        min_val, max_val = 1, 9
+    elif digit_str == "2 Digit":
+        min_val, max_val = 10, 99
+    elif digit_str == "3 Digit":
+        min_val, max_val = 100, 999
+    elif digit_str == "4 Digit":
+        min_val, max_val = 1000, 9999
+    else:
+        min_val, max_val = 1, 9
 
-  if mode == "Perkalian":
-    if digit_str == "2 Digit":
-      min_val, max_val = 10, 99
-    elif digit_str in ["3 Digit", "4 Digit"]:
-      min_val, max_val = 10, 99
+    if mode == "Perkalian":
+        if digit_str in ["2 Digit", "3 Digit", "4 Digit"]:
+            min_val, max_val = 10, 99
 
-  n1 = random.randint(min_val, max_val)
-  n2 = random.randint(min_val, max_val)
+    n1 = random.randint(min_val, max_val)
+    n2 = random.randint(min_val, max_val)
 
-  if mode == "Pertambahan":
-    correct = n1 + n2
-    symbol_text = " ditambah "
-    symbol_display = "+"
-  elif mode == "Pengurangan":
-    if n1 < n2:
-      n1, n2 = n2, n1
-    correct = n1 - n2
-    symbol_text = " dikurangi "
-    symbol_display = "-"
-  elif mode == "Perkalian":
-    correct = n1 * n2
-    symbol_text = " dikali "
-    symbol_display = "×"
+    if mode == "Pertambahan":
+        correct = n1 + n2
+        symbol_text = " ditambah "
+        symbol_display = "+"
+    elif mode == "Pengurangan":
+        if n1 < n2:
+            n1, n2 = n2, n1
+        correct = n1 - n2
+        symbol_text = " dikurangi "
+        symbol_display = "-"
+    elif mode == "Perkalian":
+        correct = n1 * n2
+        symbol_text = " dikali "
+        symbol_display = "×"
 
-  options = [correct]
-  while len(options) < 4:
-    offset = random.randint(1, max(10, int(correct * 0.2) + 1))
-    wrong = correct + random.choice([-offset, offset])
-    if wrong != correct and wrong not in options and wrong >= 0:
-      options.append(wrong)
+    options = [correct]
+    while len(options) < 4:
+        offset = random.randint(1, max(10, int(correct * 0.2) + 1))
+        wrong = correct + random.choice([-offset, offset])
+        if wrong != correct and wrong not in options and wrong >= 0:
+            options.append(wrong)
 
-  random.shuffle(options)
+    random.shuffle(options)
 
-  st.session_state.n1 = n1
-  st.session_state.n2 = n2
-  st.session_state.symbol = symbol_display
-  st.session_state.correct = correct
-  st.session_state.options = options
-  st.session_state.teks_suara = f"Berapakah {n1} {symbol_text} {n2}?"
+    st.session_state.n1 = n1
+    st.session_state.n2 = n2
+    st.session_state.symbol = symbol_display
+    st.session_state.correct = correct
+    st.session_state.options = options
+    st.session_state.teks_suara = f"Berapakah {n1} {symbol_text} {n2}?"
 
 
 if "options" not in st.session_state:
-  generate_question(st.session_state.mode, st.session_state.digit)
+    generate_question(st.session_state.mode, st.session_state.digit)
 
 # Header Aplikasi
 st.markdown('<p class="app-title">✨ MathMaster Pro ✨</p>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="app-subtitle">Latihan matematika interaktif dengan opsi audio'
-    " suara</p>",
+    '<p class="app-subtitle">Latihan matematika interaktif dengan opsi audio suara</p>',
     unsafe_allow_html=True,
 )
 
 # Sidebar Menu Pengaturan
 with st.sidebar:
-  st.markdown("### ⚙️ Pengaturan Latihan")
-  st.markdown("---")
+    st.markdown("### ⚙️ Pengaturan Latihan")
+    st.markdown("---")
 
-  digit_baru = st.selectbox(
-      "Pilih Tingkat Kesulitan:",
-      ["1 Digit", "2 Digit", "3 Digit", "4 Digit"],
-      index=["1 Digit", "2 Digit", "3 Digit", "4 Digit"].index(
-          st.session_state.digit
-      ),
-  )
+    digit_options = ["1 Digit", "2 Digit", "3 Digit", "4 Digit"]
+    digit_index = (
+        digit_options.index(st.session_state.digit)
+        if st.session_state.digit in digit_options
+        else 0
+    )
+    digit_baru = st.selectbox(
+        "Pilih Tingkat Kesulitan:", digit_options, index=digit_index
+    )
 
-  mode_baru = st.selectbox(
-      "Pilih Operasi Hitung:",
-      ["Pertambahan", "Pengurangan", "Perkalian"],
-      index=["Pertambahan", "Pengurangan", "Perkalian"].index(
-          st.session_state.mode
-      ),
-  )
+    mode_options = ["Pertambahan", "Pengurangan", "Perkalian"]
+    mode_index = (
+        mode_options.index(st.session_state.mode)
+        if st.session_state.mode in mode_options
+        else 0
+    )
+    mode_baru = st.selectbox(
+        "Pilih Operasi Hitung:", mode_options, index=mode_index
+    )
 
-  st.markdown("---")
-  st.markdown("### 🔊 Pengaturan Suara")
-  # Pilihan Audio: Dengan Audio atau Tanpa Audio
-  gunakan_audio = st.toggle("Gunakan Audio Suara", value=True)
+    st.markdown("---")
+    st.markdown("### 🔊 Pengaturan Suara")
+    gunakan_audio = st.toggle("Gunakan Audio Suara", value=True)
 
-  st.markdown("---")
-  if st.button("🔄 Reset Statistik", use_container_width=True):
+    st.markdown("---")
+    if st.button("🔄 Reset Statistik", use_container_width=True):
+        st.session_state.score = 0
+        st.session_state.total = 0
+        st.session_state.feedback = None
+        generate_question(mode_baru, digit_baru)
+        st.rerun()
+
+# Cek perubahan konfigurasi menu
+if digit_baru != st.session_state.digit or mode_baru != st.session_state.mode:
+    st.session_state.digit = digit_baru
+    st.session_state.mode = mode_baru
     st.session_state.score = 0
     st.session_state.total = 0
     st.session_state.feedback = None
     generate_question(mode_baru, digit_baru)
     st.rerun()
-
-# Cek perubahan konfigurasi menu
-if digit_baru != st.session_state.digit or mode_baru != st.session_state.mode:
-  st.session_state.digit = digit_baru
-  st.session_state.mode = mode_baru
-  st.session_state.score = 0
-  st.session_state.total = 0
-  st.session_state.feedback = None
-  generate_question(mode_baru, digit_baru)
-  st.rerun()
 
 # Dashboard Skor
 col_m1, col_m2, col_m3 = st.columns(3)
@@ -240,65 +240,58 @@ st.markdown("---")
 
 # Area Feedback / Warning
 if st.session_state.feedback:
-  status, pesan = st.session_state.feedback
-  if status == "benar":
-    st.success(pesan)
-  else:
-    st.error(pesan)
+    status, pesan = st.session_state.feedback
+    if status == "benar":
+        st.success(pesan)
+    else:
+        st.error(pesan)
 
 # Tampilan Kartu Soal
-soal_html = (
-    f'<div class="question-card">{st.session_state.n1}'
-    f" {st.session_state.symbol} {st.session_state.n2} = ?</div>"
-)
+soal_html = f'<div class="question-card">{st.session_state.n1} {st.session_state.symbol} {st.session_state.n2} = ?</div>'
 st.markdown(soal_html, unsafe_allow_html=True)
 
-# Tampilkan tombol putar ulang & jalankan suara otomatis HANYA JIKA opsi audio aktif
+# Tampilan kontrol audio
 if gunakan_audio:
-  col_suara1, col_suara2, col_suara3 = st.columns([1, 2, 1])
-  with col_suara2:
-    if st.button("🔊 Putar Ulang Suara Soal", use_container_width=True):
-      play_natural_voice(st.session_state.teks_suara)
-
-  # Panggil suara otomatis saat soal baru
-  play_natural_voice(st.session_state.teks_suara)
+    col_suara1, col_suara2, col_suara3 = st.columns([1, 2, 1])
+    with col_suara2:
+        if st.button("🔊 Putar Ulang Suara Soal", use_container_width=True):
+            play_natural_voice(st.session_state.teks_suara)
 
 st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
 
 
 # Fungsi Logika Jawaban
 def jawab(pilihan):
-  st.session_state.total += 1
-  if pilihan == st.session_state.correct:
-    st.session_state.score += 1
-    st.session_state.feedback = (
-        "benar",
-        "Luar biasa! Jawaban Anda sebelumnya **Benar**! 🚀",
-    )
-  else:
-    st.session_state.feedback = (
-        "salah",
-        f"⚠️ **Kurang Tepat!** Jawaban yang benar untuk soal sebelumnya adalah"
-        f" **{st.session_state.correct}**.",
-    )
-  generate_question(st.session_state.mode, st.session_state.digit)
+    st.session_state.total += 1
+    if pilihan == st.session_state.correct:
+        st.session_state.score += 1
+        st.session_state.feedback = (
+            "benar",
+            "Luar biasa! Jawaban Anda sebelumnya **Benar**! 🚀",
+        )
+    else:
+        st.session_state.feedback = (
+            "salah",
+            f"⚠️ **Kurang Tepat!** Jawaban yang benar adalah **{st.session_state.correct}**.",
+        )
+    generate_question(st.session_state.mode, st.session_state.digit)
 
 
 # Tata Letak Tombol Pilihan Ganda
 col1, col2 = st.columns(2)
 
 with col1:
-  if st.button(str(st.session_state.options[0]), use_container_width=True):
-    jawab(st.session_state.options[0])
-    st.rerun()
-  if st.button(str(st.session_state.options[1]), use_container_width=True):
-    jawab(st.session_state.options[1])
-    st.rerun()
+    if st.button(str(st.session_state.options[0]), use_container_width=True):
+        jawab(st.session_state.options[0])
+        st.rerun()
+    if st.button(str(st.session_state.options[1]), use_container_width=True):
+        jawab(st.session_state.options[1])
+        st.rerun()
 
 with col2:
-  if st.button(str(st.session_state.options[2]), use_container_width=True):
-    jawab(st.session_state.options[2])
-    st.rerun()
-  if st.button(str(st.session_state.options[3]), use_container_width=True):
-    jawab(st.session_state.options[3])
-    st.rerun()
+    if st.button(str(st.session_state.options[2]), use_container_width=True):
+        jawab(st.session_state.options[2])
+        st.rerun()
+    if st.button(str(st.session_state.options[3]), use_container_width=True):
+        jawab(st.session_state.options[3])
+        st.rerun()
